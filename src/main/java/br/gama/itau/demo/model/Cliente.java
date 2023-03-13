@@ -1,4 +1,4 @@
-package br.gama.itau.projetoFinal.model;
+package br.gama.itau.demo.model;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class Cliente {
     @Column(length = 20, nullable = false, unique = true)
     private String telefone;
 
-    @OneToMany(mappedBy = "cliente")
+    @OneToMany(mappedBy = "cliente") // para ligar o cliente com a conta, esta sendo mapeado por meio atributo cliente
     @JsonIgnoreProperties("cliente")
     private List<Conta> contas;
 
