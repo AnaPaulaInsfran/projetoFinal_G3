@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -32,7 +34,12 @@ public class Conta {
     @Column
     private double saldo;
 
-    @OneToMany(mappedBy = "numeroConta")
-    @JsonIgnoreProperties("numeroConta")
+    @OneToMany(mappedBy = "conta")
+    @JsonIgnoreProperties("conta")
     private List<Movimentacao> movimentacoes;
+
+    @ManyToOne
+    @JoinColumn(name = "id_cliente") // add coluna na tabela conta
+    @JsonIgnoreProperties("contas")
+    private Cliente cliente;
 }

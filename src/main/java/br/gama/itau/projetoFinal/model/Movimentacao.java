@@ -36,6 +36,6 @@ public class Movimentacao {
     @ManyToOne
     @JoinColumn(name = "numero_conta")
     @JsonIgnoreProperties("movimentacoes")
-    private int numeroConta;
+    private Conta conta;
     
 }
