@@ -1,4 +1,4 @@
-package br.gama.itau.projetoFinal.model;
+package br.gama.itau.demo.model;
 
 public enum TipoOperacao {
     

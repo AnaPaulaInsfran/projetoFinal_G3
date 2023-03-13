@@ -1,4 +1,4 @@
-package br.gama.itau.projetoFinal;
+package br.gama.itau.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
