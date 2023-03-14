@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,7 +32,8 @@ public class Movimentacao {
     @Column(length = 20, nullable = false)
     private double valor;
 
-    @Column(length = 1, nullable = false)
+    @Enumerated(EnumType.ORDINAL)
+    @Column(nullable = false)
     private TipoOperacao tipoOperacao;
 
     @ManyToOne

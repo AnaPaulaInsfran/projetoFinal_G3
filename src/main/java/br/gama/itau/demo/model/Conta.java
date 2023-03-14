@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -28,10 +30,9 @@ public class Conta {
     @Column(length = 10, nullable = false)
     private int agencia;
     
-    @Column
+    @Enumerated(EnumType.ORDINAL)
     private TipoConta tipoConta;
-
-    @Column
+    
     private double saldo;
 
     @OneToMany(mappedBy = "conta")
