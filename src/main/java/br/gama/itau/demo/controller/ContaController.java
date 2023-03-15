@@ -3,7 +3,6 @@ package br.gama.itau.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,11 +20,10 @@ import br.gama.itau.demo.service.ContaService;
 public class ContaController {
 
     @Autowired
-
     private ContaService service;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Conta> getById(@PathVariable long id) throws NotFoundException {
+    public ResponseEntity<Conta> getById(@PathVariable long id) {
         Conta conta = service.getById(id);
 
         return ResponseEntity.ok(conta);
@@ -34,9 +32,8 @@ public class ContaController {
     @GetMapping("/cliente/{id}")
     public ResponseEntity<List<Conta>> getAllByCustomer(@PathVariable long id) {
         List<Conta> contas = service.getContasClientes(id);
-        if (contas.size() == 0) {
-            return ResponseEntity.notFound().build();
-            
+        if (contas == null) {
+            return ResponseEntity.notFound().build();   
         }
         return ResponseEntity.ok(contas);
     }

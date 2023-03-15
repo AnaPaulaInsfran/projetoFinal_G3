@@ -3,9 +3,9 @@ package br.gama.itau.demo.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
+import br.gama.itau.demo.exceptions.NotFoundException;
 import br.gama.itau.demo.model.Cliente;
 import br.gama.itau.demo.model.Conta;
 import br.gama.itau.demo.repository.ClienteRepo;
@@ -27,13 +27,14 @@ public class ContaService {
         return newConta;
     }
 
-    public Conta getById(long id) throws NotFoundException {
+    public Conta getById(long id) {
         Optional<Conta> contaOptional = repo.findById(id);
         if (contaOptional.isEmpty()) {
-            throw new NotFoundException();
+            throw new NotFoundException("Conta não encontrada");
         }
         return contaOptional.get();
     }
+
 
     public Conta updateConta(Conta conta) {
         Optional<Conta> contaOptional = repo.findById(conta.getNumeroConta());
