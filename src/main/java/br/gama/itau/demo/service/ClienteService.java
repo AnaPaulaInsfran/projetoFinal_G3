@@ -3,9 +3,9 @@ package br.gama.itau.demo.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
+import br.gama.itau.demo.exceptions.NotFoundException;
 import br.gama.itau.demo.model.Cliente;
 import br.gama.itau.demo.repository.ClienteRepo;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +17,11 @@ public class ClienteService {
     
     private final ClienteRepo repo;
 
-    public Cliente getById(long id) throws NotFoundException{
+    public Cliente getById(long id){
         Optional<Cliente> clienteOptional=repo.findById(id);
 
         if(clienteOptional.isEmpty()){
-            throw new NotFoundException();
+            throw new NotFoundException("Cliente não encontrado");
         }
         return clienteOptional.get();
     }

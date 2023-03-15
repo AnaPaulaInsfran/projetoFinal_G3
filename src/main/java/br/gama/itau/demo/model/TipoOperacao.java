@@ -10,7 +10,4 @@ public enum TipoOperacao {
     private TipoOperacao(int valor) {
         this.valor = valor;
     }
-
-    
-
 }

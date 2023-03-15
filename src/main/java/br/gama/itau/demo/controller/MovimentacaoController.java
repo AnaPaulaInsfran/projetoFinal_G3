@@ -2,6 +2,7 @@ package br.gama.itau.demo.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,15 +18,14 @@ import br.gama.itau.demo.service.MovimentacaoService;
 @RestController
 @RequestMapping("/movimentacao")
 public class MovimentacaoController {
+
+    @Autowired
     private MovimentacaoService service;
     
     @GetMapping("/{id}")
     public List<Movimentacao> mostrarMovimentacoes(@PathVariable long id){
         return service.getAll(id);
-                  
-        
     }  
-
 
     @PostMapping
     public ResponseEntity<Movimentacao> cadastrarMovimentacoes(@RequestBody Movimentacao novaMovimentacao ){
