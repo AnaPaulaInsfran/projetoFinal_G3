@@ -24,7 +24,7 @@ import br.gama.itau.demo.repository.ClienteRepo;
 import br.gama.itau.demo.repository.ContaRepo;
 
 public class ContaServiceTeste {
-    
+
     private final ContaRepo contaRepo = mock(ContaRepo.class);
     private final ClienteRepo clienteRepo = mock(ClienteRepo.class);
     private ContaService contaService;
@@ -53,20 +53,24 @@ public class ContaServiceTeste {
         Conta conta = new Conta();
         conta.setNumeroConta(2L);
 
-        assertThrows (NotFoundException.class, ()-> {
-            contaService.getById(conta.getNumeroConta()); } );
+        assertThrows(NotFoundException.class, () -> {
+            contaService.getById(conta.getNumeroConta());
+        });
     }
 
     @Test
     void newConta_returnNovaConta_whenContaValida() {
-        Conta conta = new Conta();
+        Conta conta = Conta.builder().build();
+        Conta contaRetorno = new Conta();
+        contaRetorno.setAgencia(3221);
+        contaRetorno.setNumeroConta(1L);
         BDDMockito.when(contaRepo.save(ArgumentMatchers.any(Conta.class)))
-        .thenReturn(conta);
-        
+                .thenReturn(contaRetorno);
+
         Conta contaCriada = contaService.newConta(conta);
 
         assertTrue(contaCriada != null);
-        assertTrue(contaCriada.getNumeroConta() >= 0);
+        assertTrue(contaCriada.getNumeroConta() > 0);
 
         verify(contaRepo, Mockito.times(1)).save(conta);
     }
@@ -79,7 +83,7 @@ public class ContaServiceTeste {
         conta.setNumeroConta(1L);
 
         BDDMockito.when(contaRepo.findById(conta.getNumeroConta()))
-        .thenReturn(contaOptional);
+                .thenReturn(contaOptional);
         BDDMockito.when(contaRepo.save(conta)).thenReturn(contaOptional.get());
 
         Conta updateConta = contaService.updateConta(conta);
@@ -88,16 +92,16 @@ public class ContaServiceTeste {
         assertEquals(1L, updateConta.getNumeroConta());
 
         verify(contaRepo, Mockito.times(1))
-        .save(conta);
+                .save(conta);
     }
 
     @Test
     void updateConta_returnNull_whenContaInvalida() {
         Conta conta = new Conta();
         conta.setNumeroConta(1L);
-        
+
         BDDMockito.when(contaRepo.findById(conta.getNumeroConta()))
-        .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
         Conta contaNula = contaService.updateConta(conta);
 
@@ -114,13 +118,15 @@ public class ContaServiceTeste {
         Optional<Cliente> clienteOptional = Optional.of(new Cliente());
         clienteOptional.get().setContas(listaContas);
         clienteOptional.get().setId(1L);
+        conta.setCliente(clienteOptional.get());
+        conta2.setCliente(clienteOptional.get());
 
         BDDMockito.when(clienteRepo.findById(1L)).thenReturn(clienteOptional);
         List<Conta> contas = contaService.getContasClientes(1L);
 
         assertEquals(2, contas.size());
         assertFalse(contas.isEmpty());
-       // assertEquals(1L, contas.get(0).getCliente().getId()); 
+        assertEquals(1L, contas.get(0).getCliente().getId());
     }
 
     @Test
@@ -129,10 +135,8 @@ public class ContaServiceTeste {
         BDDMockito.when(clienteRepo.findById(1L)).thenReturn(Optional.empty());
         List<Conta> contaVazia = contaService.getContasClientes(1L);
 
-       // assertEquals(0, contaVazia.size());
-        assertTrue(contaVazia.isEmpty());
+        // assertEquals(0, contaVazia.size());
+        assertTrue(contaVazia == null);
     }
-
-
 
 }
