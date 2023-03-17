@@ -1,33 +1,36 @@
 package br.gama.itau.demo.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import java.util.Optional;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.gama.itau.demo.exceptions.NotFoundException;
 import br.gama.itau.demo.model.Cliente;
 import br.gama.itau.demo.repository.ClienteRepo;
 import br.gama.itau.demo.util.GenerateCliente;
 
-public class ClienteServiceTeste {
+@ExtendWith(MockitoExtension.class)
+public class ClienteServiceTest {
 
-    private final ClienteRepo clienteRepo = mock(ClienteRepo.class);
-    private ClienteService clienteService;
+    private final static ClienteRepo clienteRepo = mock(ClienteRepo.class);
+    private static ClienteService clienteService;
 
     @BeforeAll
-    void init() {
-        this.clienteService = new ClienteService(clienteRepo);
+    static void init() {
+        clienteService = new ClienteService(clienteRepo);
     }
 
     @Test
@@ -69,7 +72,7 @@ public class ClienteServiceTeste {
         Cliente clienteSemId = GenerateCliente.novoClienteSemId();
 
         BDDMockito.when(clienteRepo.save(clienteSemId)).thenReturn(clienteComId);
-       Cliente clienteRetorno = clienteService.newCliente(clienteSemId);
+        Cliente clienteRetorno = clienteService.newCliente(clienteSemId);
 
         assertEquals(clienteSemId.getNome(),clienteRetorno.getNome());
         assertEquals(clienteSemId.getTelefone(),clienteRetorno.getTelefone());

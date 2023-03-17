@@ -41,6 +41,14 @@ public class GenerateCliente {
         .build();
     }
 
+    public static Cliente novoClienteComLista(){
+        return Cliente.builder()
+        .id(1L)
+        .cpf("34698765468")
+        .telefone("11955663321")
+        .nome("Gabriel Sr. BigBoss")
+        .build();
+    }
 
     public static List <Cliente> listaCliente(){
         ArrayList<Cliente> listaCliente = new ArrayList<>();
@@ -50,4 +58,4 @@ public class GenerateCliente {
         return listaCliente();
     }
 
-    }
+}

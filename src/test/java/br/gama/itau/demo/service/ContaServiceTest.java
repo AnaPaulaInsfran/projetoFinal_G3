@@ -13,9 +13,11 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.gama.itau.demo.exceptions.NotFoundException;
 import br.gama.itau.demo.model.Cliente;
@@ -23,7 +25,8 @@ import br.gama.itau.demo.model.Conta;
 import br.gama.itau.demo.repository.ClienteRepo;
 import br.gama.itau.demo.repository.ContaRepo;
 
-public class ContaServiceTeste {
+@ExtendWith(MockitoExtension.class)
+public class ContaServiceTest {
 
     private final ContaRepo contaRepo = mock(ContaRepo.class);
     private final ClienteRepo clienteRepo = mock(ClienteRepo.class);
@@ -49,7 +52,7 @@ public class ContaServiceTeste {
     }
 
     @Test
-    void getById_returnConta_whenIdNotExists() {
+    void getById_trhowsException_whenIdNotExists() {
         Conta conta = new Conta();
         conta.setNumeroConta(2L);
 
