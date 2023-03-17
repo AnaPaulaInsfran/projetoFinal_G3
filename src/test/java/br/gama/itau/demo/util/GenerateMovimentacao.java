@@ -4,12 +4,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.gama.itau.demo.model.Conta;
 import br.gama.itau.demo.model.Movimentacao;
 import br.gama.itau.demo.model.TipoOperacao;
 
 public class GenerateMovimentacao {
     public static Movimentacao novaMovimentacao(){
         return Movimentacao.builder()
+        .conta(Conta.builder().numeroConta(1L).build())
         .numeroSeq(1L)
         .dataOperacao(LocalDate.now())
         .valor(10000)
@@ -19,6 +21,7 @@ public class GenerateMovimentacao {
    
     public static Movimentacao novaMovimentacao2(){
         return Movimentacao.builder()
+        .conta(Conta.builder().numeroConta(1L).build())
         .numeroSeq(2L)
         .dataOperacao(LocalDate.now())
         .valor(5000)
@@ -28,6 +31,7 @@ public class GenerateMovimentacao {
     
     public static Movimentacao novaMovimentacao3(){
         return Movimentacao.builder()
+        .conta(Conta.builder().numeroConta(1L).build())
         .numeroSeq(3L)
         .dataOperacao(LocalDate.now())
         .valor(100)
@@ -37,6 +41,7 @@ public class GenerateMovimentacao {
     
     public static Movimentacao novaMovimentacaoSemId(){
         return Movimentacao.builder()
+        .conta(Conta.builder().numeroConta(1L).build())
         .dataOperacao(LocalDate.now())
         .valor(650)
         .tipoOperacao(TipoOperacao.CREDITO)

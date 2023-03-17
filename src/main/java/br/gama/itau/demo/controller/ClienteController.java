@@ -19,7 +19,7 @@ import br.gama.itau.demo.model.Cliente;
 import br.gama.itau.demo.service.ClienteService;
 
 @RestController
-@RequestMapping("/clientes")
+@RequestMapping("/cliente")
 public class ClienteController {
 
     @Autowired

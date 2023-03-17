@@ -40,9 +40,9 @@ public class MovimentacaoServiceTest {
         movimentacaoComId.setNumeroSeq(1L);
 
         BDDMockito.when(movimentacaoRepo.save(movimentacaoSemId)).thenReturn(movimentacaoComId);
-        Movimentacao movimentacaoRetorno = movimentacaoService.newMovimentacao(movimentacaoComId);
+        Movimentacao movimentacaoRetorno = movimentacaoService.newMovimentacao(movimentacaoSemId);
 
-        assertEquals(movimentacaoSemId.getConta(), movimentacaoRetorno.getConta());
+        assertEquals(movimentacaoSemId.getConta().getNumeroConta(), movimentacaoRetorno.getConta().getNumeroConta());
         assertEquals(movimentacaoSemId.getDataOperacao(), movimentacaoRetorno.getDataOperacao());
         assertEquals(movimentacaoSemId.getTipoOperacao(), movimentacaoRetorno.getTipoOperacao());
         assertEquals(movimentacaoSemId.getValor(), movimentacaoRetorno.getValor());
