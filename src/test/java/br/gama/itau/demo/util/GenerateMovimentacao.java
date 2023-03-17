@@ -1,6 +1,8 @@
 package br.gama.itau.demo.util;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.gama.itau.demo.model.Movimentacao;
 import br.gama.itau.demo.model.TipoOperacao;
@@ -41,4 +43,12 @@ public class GenerateMovimentacao {
         .build();
     }
     
+    public static List <Movimentacao> listaMovimentacao() {
+        ArrayList <Movimentacao> listaMovimentacoes = new ArrayList<>();
+        listaMovimentacoes.add(novaMovimentacao());
+        listaMovimentacoes.add(novaMovimentacao2());
+        listaMovimentacoes.add(novaMovimentacao3());
+
+        return listaMovimentacoes;
+    }
 }
