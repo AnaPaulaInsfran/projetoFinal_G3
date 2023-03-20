@@ -49,9 +49,13 @@ public class MovimentacaoService {
                 contaRepo.save(contaDeDestino.get());
 
                 Movimentacao mov1 = Movimentacao.builder()
-                .conta(contaDeOrigem.get()).valor(valor).dataOperacao(LocalDate.now()).tipoOperacao(TipoOperacao.DEBITO).build();
+                .conta(contaDeOrigem.get()).valor(valor).dataOperacao(LocalDate.now())
+                .tipoOperacao(TipoOperacao.DEBITO).build();
+
                 Movimentacao mov2 = Movimentacao.builder()
-                .conta(contaDeDestino.get()).valor(valor).dataOperacao(LocalDate.now()).tipoOperacao(TipoOperacao.CREDITO).build();
+                .conta(contaDeDestino.get()).valor(valor).dataOperacao(LocalDate.now())
+                .tipoOperacao(TipoOperacao.CREDITO).build();
+                
                 repo.save(newMovimentacao(mov1));
                 repo.save(newMovimentacao(mov2));
 

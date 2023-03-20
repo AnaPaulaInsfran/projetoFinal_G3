@@ -41,12 +41,22 @@ public class GenerateMovimentacao {
     
     public static Movimentacao novaMovimentacaoSemId(){
         return Movimentacao.builder()
-        .conta(Conta.builder().numeroConta(1L).build())
+        .conta(Conta.builder().build())
         .dataOperacao(LocalDate.now())
         .valor(650)
         .tipoOperacao(TipoOperacao.CREDITO)
         .build();
     }
+
+    public static Movimentacao novaMovimentacaoSemId2(){
+        return Movimentacao.builder()
+        .conta(Conta.builder().build())
+        .dataOperacao(LocalDate.now())
+        .valor(650)
+        .tipoOperacao(TipoOperacao.CREDITO)
+        .build();
+    }
+
     
     public static List <Movimentacao> listaMovimentacao() {
         ArrayList <Movimentacao> listaMovimentacoes = new ArrayList<>();
@@ -56,4 +66,15 @@ public class GenerateMovimentacao {
 
         return listaMovimentacoes;
     }
+
+
+
+    public static List <Movimentacao> listaMovimentacaoSemId() {
+        ArrayList <Movimentacao> listaMovimentacoes = new ArrayList<>();
+        listaMovimentacoes.add(novaMovimentacaoSemId());
+        listaMovimentacoes.add(novaMovimentacaoSemId2());
+
+        return listaMovimentacoes;
+    }
+
 }

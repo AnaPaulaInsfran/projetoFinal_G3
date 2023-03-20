@@ -19,8 +19,10 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.gama.itau.demo.model.Cliente;
 import br.gama.itau.demo.model.Conta;
 import br.gama.itau.demo.model.Movimentacao;
+import br.gama.itau.demo.model.TipoConta;
 import br.gama.itau.demo.repository.ClienteRepo;
 import br.gama.itau.demo.repository.ContaRepo;
 import br.gama.itau.demo.repository.MovimentacaoRepo;
@@ -49,24 +51,31 @@ public class MovimentacaoControllerITTest {
   @BeforeEach
   public void setup() {
     movimentacaoRepo.deleteAll();
+    contaRepo.deleteAll();
+    clienteRepo.deleteAll();
   }
 
   @Test
   void mostrarMovimentacoes_retornaListaMovimentacoes_quandoIdContaExistir() throws Exception {
-    List<Movimentacao> movimentacoes = GenerateMovimentacao.listaMovimentacao();
-    clienteRepo.save(GenerateCliente.novoClienteSemId());
-    contaRepo.save(Conta.builder()
+    Cliente clienteCriado = clienteRepo.save(GenerateCliente.novoClienteSemId());
+
+    Conta conta = contaRepo.save(Conta.builder()
+        .cliente(clienteCriado)
         .agencia(8622)
-        .movimentacoes(movimentacoes)
         .build());
 
+    List<Movimentacao> movimentacoes = GenerateMovimentacao.listaMovimentacaoSemId();
+
+    movimentacoes.get(0).setConta(conta);
     List<Movimentacao> movimentacoesRetorno = (List<Movimentacao>) movimentacaoRepo.saveAll(movimentacoes);
 
-    ResultActions resultado = mockMvc.perform(get("/movimentacao/1").contentType(MediaType.APPLICATION_JSON));
+    ResultActions resultado = mockMvc
+        .perform(get("/movimentacao/{id}", conta.getNumeroConta()).contentType(MediaType.APPLICATION_JSON));
 
     resultado.andExpect(status().isOk())
-    // .andExpect(jsonPath("$[0].numeroSeq", CoreMatchers.is(movimentacoesRetorno.get(0).getNumeroSeq())));
-    .andExpect(jsonPath("$[0].valor", CoreMatchers.is(movimentacoesRetorno.get(0).getValor())));
+        // .andExpect(jsonPath("$[0].numeroSeq",
+        // CoreMatchers.is(movimentacoesRetorno.get(0).getNumeroSeq())));
+        .andExpect(jsonPath("$[0].valor", CoreMatchers.is(movimentacoesRetorno.get(0).getValor())));
 
   }
 
@@ -75,9 +84,8 @@ public class MovimentacaoControllerITTest {
     Movimentacao movimentacao = GenerateMovimentacao.novaMovimentacaoSemId();
 
     contaRepo.save(Conta.builder()
-    .agencia(8622)
-    .build());
-
+        .agencia(8622)
+        .build());
 
     ResultActions resultado = mockMvc.perform(post("/movimentacao")
         .content(objectMapper.writeValueAsString(movimentacao))
@@ -87,8 +95,79 @@ public class MovimentacaoControllerITTest {
         .andExpect(jsonPath("$.valor", CoreMatchers.is(movimentacao.getValor())));
   }
 
+  // @Test
+  // void cadastrarMovimentacoes_retornaBadRequest_quandoIdExistir() {
+  // Movimentacao movimentacao = GenerateMovimentacao.novaMovimentacaoSemId();
+  // movimentacaoRepo.save(movimentacao);
+
+  // // ResultActions resultado = mockMvc.perform(post("/movimentacao/1")
+
+  // // .contentType(MediaType.APPLICATION_JSON));
+
+  // // resultado.andExpect(status().isBadRequest());
+  // }
+
   @Test
-  void cadastrarMovimentacoes_retornaBadRequest_quandoIdExistir() {
+  void transferirValor_retornaStatusOk_quandoContasEValorValidos() throws Exception {
+    Cliente clienteSalvo = clienteRepo.save(GenerateCliente.novoClienteSemId());
+    Conta conta1 = contaRepo.save(Conta.builder()
+        .agencia(8622)
+        .cliente(clienteSalvo)
+        .tipoConta(TipoConta.PESSOA_FISICA)
+        .saldo(10000)
+        .build());
+    Conta conta2 = contaRepo.save(Conta.builder()
+        .agencia(8622)
+        .tipoConta(TipoConta.ESTUDANTIL)
+        .cliente(clienteSalvo)
+        .build());
+
+    ResultActions resultado = mockMvc
+        .perform(post("/movimentacao/{origem}/{destino}/1000", conta1.getNumeroConta(), conta2.getNumeroConta())
+            .contentType(MediaType.APPLICATION_JSON));
+
+    resultado.andExpect(status().isCreated());
 
   }
+
+  @Test
+  void transferirValor_retornaNotFound_quandoContaInvalida() throws Exception {
+    Cliente clienteSalvo = clienteRepo.save(GenerateCliente.novoClienteSemId());
+    Conta conta = contaRepo.save(Conta.builder()
+        .agencia(8622)
+        .cliente(clienteSalvo)
+        .tipoConta(TipoConta.PESSOA_FISICA)
+        .saldo(10000)
+        .build());
+
+    ResultActions resultado = mockMvc.perform(post("/movimentacao/{origem}/2/1000", conta.getNumeroConta())
+        .contentType(MediaType.APPLICATION_JSON));
+
+    resultado.andExpect(status().isNotFound());
+
+  }
+
+  @Test
+  void transferirValor_retornaBadRequest_quandoSaldoInsuficiente() throws Exception {
+    Cliente clienteSalvo = clienteRepo.save(GenerateCliente.novoClienteSemId());
+    Conta conta1 = contaRepo.save(Conta.builder()
+        .agencia(8622)
+        .cliente(clienteSalvo)
+        .tipoConta(TipoConta.PESSOA_FISICA)
+        .saldo(500)
+        .build());
+    Conta conta2 = contaRepo.save(Conta.builder()
+        .agencia(8622)
+        .tipoConta(TipoConta.ESTUDANTIL)
+        .cliente(clienteSalvo)
+        .build());
+
+    ResultActions resultado = mockMvc
+        .perform(post("/movimentacao/{origem}/{destino}/1000", conta1.getNumeroConta(), conta2.getNumeroConta())
+            .contentType(MediaType.APPLICATION_JSON));
+
+    resultado.andExpect(status().isBadRequest());
+
+  }
+
 }
