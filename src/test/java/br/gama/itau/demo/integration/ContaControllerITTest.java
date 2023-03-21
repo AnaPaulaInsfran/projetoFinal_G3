@@ -54,7 +54,7 @@ public class ContaControllerITTest {
     Conta conta = Conta.builder().tipoConta(TipoConta.ESTUDANTIL).saldo(5642).agencia(0101).build();
     Conta novaConta = contaRepo.save(conta);
 
-    ResultActions resultado = mockMvc.perform(get("/contas/{id}", novaConta.getNumeroConta())
+    ResultActions resultado = mockMvc.perform(get("/conta/{id}", novaConta.getNumeroConta())
         .contentType(MediaType.APPLICATION_JSON));
 
     resultado.andExpect(status().isOk())
@@ -66,7 +66,7 @@ public class ContaControllerITTest {
   @Test
   void getById_throwsNotFoundException_whenIdNotExists() throws Exception {
 
-    ResultActions resultado = mockMvc.perform(get("/contas/100")
+    ResultActions resultado = mockMvc.perform(get("/conta/100")
         .contentType(MediaType.APPLICATION_JSON));
 
     resultado.andExpect(status().isNotFound());
@@ -84,7 +84,7 @@ public class ContaControllerITTest {
 
     List<Conta> listaRetorno = (List<Conta>) contaRepo.saveAll(lista);
 
-    ResultActions resposta = mockMvc.perform(get("/contas/cliente/{id}", clienteRetorno.getId())
+    ResultActions resposta = mockMvc.perform(get("/conta/cliente/{id}", clienteRetorno.getId())
         .contentType(MediaType.APPLICATION_JSON));
 
     resposta.andExpect(status().isOk())
@@ -97,7 +97,7 @@ public class ContaControllerITTest {
   @Test
   void getAllByCustomer_returnNotFound_whenIdNotExists() throws Exception {
 
-    ResultActions resposta = mockMvc.perform(get("/contas/cliente/100")
+    ResultActions resposta = mockMvc.perform(get("/conta/cliente/100")
         .contentType(MediaType.APPLICATION_JSON));
 
     resposta.andExpect(status().isNotFound());
@@ -108,7 +108,7 @@ public class ContaControllerITTest {
   void newConta_returnConta_whenIdNotExists() throws Exception {
     Conta conta = Conta.builder().tipoConta(TipoConta.ESTUDANTIL).saldo(5642).agencia(0101).build();
 
-    ResultActions resultado = mockMvc.perform(post("/contas")
+    ResultActions resultado = mockMvc.perform(post("/conta")
         .content(objectMapper.writeValueAsString(conta))
         .contentType(MediaType.APPLICATION_JSON));
 
@@ -119,7 +119,7 @@ public class ContaControllerITTest {
   @Test
   void newConta_throwsBadRequest_whenIdExists() throws Exception {
     Conta conta = Conta.builder().numeroConta(1).tipoConta(TipoConta.ESTUDANTIL).saldo(5642).agencia(0101).build();
-    ResultActions resultado = mockMvc.perform(post("/contas")
+    ResultActions resultado = mockMvc.perform(post("/conta")
         .content(objectMapper.writeValueAsString(conta))
         .contentType(MediaType.APPLICATION_JSON));
 
