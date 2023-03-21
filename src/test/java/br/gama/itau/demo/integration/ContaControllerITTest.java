@@ -44,6 +44,7 @@ public class ContaControllerITTest {
     @BeforeEach
     public void setup() {
         contaRepo.deleteAll();
+        clienteRepo.deleteAll();
     }
 
     @Test
@@ -65,14 +66,15 @@ public class ContaControllerITTest {
   void getAllByCustomer_returnListContas_whenIdExists() throws Exception {
     List<Conta> lista = new ArrayList<>();
     Cliente cliente = Cliente.builder().nome("Gabriel").telefone("3546456994").cpf("546864766").contas(lista).build();
-    lista.add(Conta.builder().cliente(cliente).agencia(0101).build());
-    lista.add(Conta.builder().cliente(cliente).agencia(0101).build());
-    lista.add(Conta.builder().cliente(cliente).agencia(0101).build());
+    Cliente clienteRetorno = clienteRepo.save(cliente);
+    lista.add(Conta.builder().cliente(clienteRetorno).agencia(0101).build());
+    lista.add(Conta.builder().cliente(clienteRetorno).agencia(0101).build());
+    lista.add(Conta.builder().cliente(clienteRetorno).agencia(0101).build());
 
-    clienteRepo.save(cliente);
+    
     List<Conta> listaRetorno = (List<Conta>) contaRepo.saveAll(lista);
 
-    ResultActions resposta = mockMvc.perform(get("/contas/cliente/1")
+    ResultActions resposta = mockMvc.perform(get("/contas/cliente/{id}",clienteRetorno.getId())
         .contentType(MediaType.APPLICATION_JSON));
 
     resposta.andExpect(status().isOk())
