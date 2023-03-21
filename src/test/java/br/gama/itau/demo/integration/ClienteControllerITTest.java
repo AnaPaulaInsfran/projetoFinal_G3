@@ -27,62 +27,91 @@ import br.gama.itau.demo.util.GenerateCliente;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class ClienteControllerITTest {
-    
-    @Autowired
-    private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @Autowired
-    private ClienteRepo clienteRepo;
+  @Autowired
+  private ObjectMapper objectMapper;
 
-    @BeforeEach
-    public void setup() {
-        clienteRepo.deleteAll();
-    }
+  @Autowired
+  private ClienteRepo clienteRepo;
 
-    @Test
-    void getAll_returnListCLient_whenClienteValido() throws Exception {
-        // List <Cliente> lista = GenerateCliente.listaClienteSemId();
-        // clienteRepo.saveAll(lista);
-        List <Cliente> lista = new ArrayList<>();
-        lista.add(GenerateCliente.novoClienteSemId());
-        lista.add(GenerateCliente.novoClienteSemId2());
+  @BeforeEach
+  public void setup() {
+    clienteRepo.deleteAll();
+  }
 
-        List <Cliente> clientesRetorno = (List <Cliente>)clienteRepo.saveAll(lista);
+  @Test
+  void getAll_returnListCLient_whenClienteValido() throws Exception {
+    // List <Cliente> lista = GenerateCliente.listaClienteSemId();
+    // clienteRepo.saveAll(lista);
+    List<Cliente> lista = new ArrayList<>();
+    lista.add(GenerateCliente.novoClienteSemId());
+    lista.add(GenerateCliente.novoClienteSemId2());
 
-        ResultActions resposta = mockMvc.perform(get("/cliente")
-                                        .contentType(MediaType.APPLICATION_JSON));
+    List<Cliente> clientesRetorno = (List<Cliente>) clienteRepo.saveAll(lista);
 
-        resposta.andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", CoreMatchers.is(clientesRetorno.size())))
-                .andExpect(jsonPath("$[0].nome", CoreMatchers.is(clientesRetorno.get(0).getNome())))
-                .andExpect(jsonPath("$[0].telefone", CoreMatchers.is(clientesRetorno.get(0).getTelefone())));
-    }
+    ResultActions resposta = mockMvc.perform(get("/cliente")
+        .contentType(MediaType.APPLICATION_JSON));
 
-    @Test
-    void getById_returnCLientDTO_whenIdClienteValido() throws Exception{
-        Cliente novoCliente = GenerateCliente.novoClienteSemId();
-        Cliente clienteCriado = clienteRepo.save(novoCliente);
+    resposta.andExpect(status().isOk())
+        .andExpect(jsonPath("$.size()", CoreMatchers.is(clientesRetorno.size())))
+        .andExpect(jsonPath("$[0].nome", CoreMatchers.is(clientesRetorno.get(0).getNome())))
+        .andExpect(jsonPath("$[0].telefone", CoreMatchers.is(clientesRetorno.get(0).getTelefone())));
+  }
 
-        ResultActions resultado = mockMvc.perform(get("/cliente/{id}", clienteCriado.getId())
-                                        .contentType(MediaType.APPLICATION_JSON));
+  // @Test
+  // void getAll_throwsNotFoundException_whenClienteInvalido() throws Exception {
 
-        resultado.andExpect(status().isOk())
-                .andExpect(jsonPath("$.cpf", CoreMatchers.is(clienteCriado.getCpf())));  
-    }
+  // ResultActions resposta = mockMvc.perform(get("/cliente")
+  // .contentType(MediaType.APPLICATION_JSON));
 
-    @Test
-    void cadastrarCliente_returnNewCLient_whenCLientNotExists() throws Exception {
-        Cliente novoCliente = GenerateCliente.novoClienteSemId();
+  // resposta.andExpect(status().isNotFound());
+  // }
 
-        ResultActions resultado = mockMvc.perform(post("/cliente")
-                                        .content(objectMapper.writeValueAsString(novoCliente))
-                                        .contentType(MediaType.APPLICATION_JSON));
+  @Test
+  void getById_returnCLientDTO_whenIdClienteValido() throws Exception {
+    Cliente novoCliente = GenerateCliente.novoClienteSemId();
+    Cliente clienteCriado = clienteRepo.save(novoCliente);
 
-        resultado.andExpect(status().isCreated())
-                .andExpect(jsonPath("$.telefone", CoreMatchers.is(novoCliente.getTelefone())));
-    }
-  
-}    
+    ResultActions resultado = mockMvc.perform(get("/cliente/{id}", clienteCriado.getId())
+        .contentType(MediaType.APPLICATION_JSON));
+
+    resultado.andExpect(status().isOk())
+        .andExpect(jsonPath("$.cpf", CoreMatchers.is(clienteCriado.getCpf())));
+  }
+
+  @Test
+  void getById_throwsNotFoundException_whenIdClienteInvalido() throws Exception {
+
+    ResultActions resultado = mockMvc.perform(get("/cliente/100")
+        .contentType(MediaType.APPLICATION_JSON));
+
+    resultado.andExpect(status().isNotFound());
+  }
+
+  @Test
+  void cadastrarCliente_returnNewCLient_whenCLientNotExists() throws Exception {
+    Cliente novoCliente = GenerateCliente.novoClienteSemId();
+
+    ResultActions resultado = mockMvc.perform(post("/cliente")
+        .content(objectMapper.writeValueAsString(novoCliente))
+        .contentType(MediaType.APPLICATION_JSON));
+
+    resultado.andExpect(status().isCreated())
+        .andExpect(jsonPath("$.telefone", CoreMatchers.is(novoCliente.getTelefone())));
+  }
+
+  @Test
+  void cadastrarCliente_throwsBadRquest_whenCLientExists() throws Exception {
+    Cliente novoCliente = GenerateCliente.novoCliente();
+
+    ResultActions resultado = mockMvc.perform(post("/cliente")
+        .content(objectMapper.writeValueAsString(novoCliente))
+        .contentType(MediaType.APPLICATION_JSON));
+
+    resultado.andExpect(status().isBadRequest());
+  }
+
+}
