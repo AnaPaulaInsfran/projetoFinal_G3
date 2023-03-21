@@ -16,7 +16,7 @@ import br.gama.itau.demo.model.Conta;
 import br.gama.itau.demo.service.ContaService;
 
 @RestController
-@RequestMapping("/contas")
+@RequestMapping("/conta")
 public class ContaController {
 
     @Autowired
