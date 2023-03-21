@@ -64,7 +64,7 @@ public class MovimentacaoControllerITTest {
         .agencia(8622)
         .build());
 
-    List<Movimentacao> movimentacoes = GenerateMovimentacao.listaMovimentacaoSemId();
+    List<Movimentacao> movimentacoes = GenerateMovimentacao.listaMovimentacaoSemIdConta();
 
     movimentacoes.get(0).setConta(conta);
     List<Movimentacao> movimentacoesRetorno = (List<Movimentacao>) movimentacaoRepo.saveAll(movimentacoes);
@@ -81,11 +81,14 @@ public class MovimentacaoControllerITTest {
 
   @Test
   void cadastrarMovimentacoes_retornaNovaMovimentacao_quandoIdNaoExistir() throws Exception {
-    Movimentacao movimentacao = GenerateMovimentacao.novaMovimentacaoSemId();
+    Cliente clienteSalvo = clienteRepo.save(GenerateCliente.novoClienteSemId());
 
-    contaRepo.save(Conta.builder()
+    Conta contaRetorno = contaRepo.save(Conta.builder()
+        .cliente(clienteSalvo)
         .agencia(8622)
         .build());
+    Movimentacao movimentacao = GenerateMovimentacao.novaMovimentacaoSemId();
+    movimentacao.setConta(contaRetorno);
 
     ResultActions resultado = mockMvc.perform(post("/movimentacao")
         .content(objectMapper.writeValueAsString(movimentacao))
