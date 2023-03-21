@@ -1,5 +1,6 @@
 package br.gama.itau.demo.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,13 @@ public class MovimentacaoController {
   private MovimentacaoService service;
 
   @GetMapping("/{id}")
-  public List<Movimentacao> mostrarMovimentacoes(@PathVariable long id) {
-    return service.getAll(id);
+  public ResponseEntity<List<Movimentacao>> mostrarMovimentacoes(@PathVariable long id) {
+    List<Movimentacao> movimentacoes = service.getAll(id);
+
+    if (movimentacoes == null) {
+      ResponseEntity.badRequest().build();
+    }
+    return ResponseEntity.ok(movimentacoes);
   }
 
   @PostMapping
