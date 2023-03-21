@@ -1,4 +1,5 @@
 package br.gama.itau.demo.integration;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -29,40 +30,50 @@ import br.gama.itau.demo.repository.ContaRepo;
 @AutoConfigureMockMvc
 public class ContaControllerITTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired
+  private ObjectMapper objectMapper;
 
-    @Autowired
-    private ContaRepo contaRepo;
+  @Autowired
+  private ContaRepo contaRepo;
 
-    @Autowired
+  @Autowired
   private ClienteRepo clienteRepo;
 
-    @BeforeEach
-    public void setup() {
-        contaRepo.deleteAll();
-        clienteRepo.deleteAll();
-    }
+  @BeforeEach
+  public void setup() {
+    contaRepo.deleteAll();
+    clienteRepo.deleteAll();
+  }
 
-    @Test
-    void getById_returnConta_whenIdExists() throws Exception {
+  @Test
+  void getById_returnConta_whenIdExists() throws Exception {
 
-        Conta conta = Conta.builder().tipoConta(TipoConta.ESTUDANTIL).saldo(5642).agencia(0101).build();
-        Conta novaConta = contaRepo.save(conta);
+    Conta conta = Conta.builder().tipoConta(TipoConta.ESTUDANTIL).saldo(5642).agencia(0101).build();
+    Conta novaConta = contaRepo.save(conta);
 
-        ResultActions resultado = mockMvc.perform(get("/contas/{id}", novaConta.getNumeroConta())
-                .contentType(MediaType.APPLICATION_JSON));
+    ResultActions resultado = mockMvc.perform(get("/contas/{id}", novaConta.getNumeroConta())
+        .contentType(MediaType.APPLICATION_JSON));
 
-        resultado.andExpect(status().isOk())
-                .andExpect(jsonPath("$.agencia", CoreMatchers.is(novaConta.getAgencia())))
-                .andExpect(jsonPath("$.saldo", CoreMatchers.is(novaConta.getSaldo())));
+    resultado.andExpect(status().isOk())
+        .andExpect(jsonPath("$.agencia", CoreMatchers.is(novaConta.getAgencia())))
+        .andExpect(jsonPath("$.saldo", CoreMatchers.is(novaConta.getSaldo())));
 
-    }
+  }
 
-    @Test
+  @Test
+  void getById_throwsNotFoundException_whenIdNotExists() throws Exception {
+
+    ResultActions resultado = mockMvc.perform(get("/contas/100")
+        .contentType(MediaType.APPLICATION_JSON));
+
+    resultado.andExpect(status().isNotFound());
+
+  }
+
+  @Test
   void getAllByCustomer_returnListContas_whenIdExists() throws Exception {
     List<Conta> lista = new ArrayList<>();
     Cliente cliente = Cliente.builder().nome("Gabriel").telefone("3546456994").cpf("546864766").contas(lista).build();
@@ -71,10 +82,9 @@ public class ContaControllerITTest {
     lista.add(Conta.builder().cliente(clienteRetorno).agencia(0101).build());
     lista.add(Conta.builder().cliente(clienteRetorno).agencia(0101).build());
 
-    
     List<Conta> listaRetorno = (List<Conta>) contaRepo.saveAll(lista);
 
-    ResultActions resposta = mockMvc.perform(get("/contas/cliente/{id}",clienteRetorno.getId())
+    ResultActions resposta = mockMvc.perform(get("/contas/cliente/{id}", clienteRetorno.getId())
         .contentType(MediaType.APPLICATION_JSON));
 
     resposta.andExpect(status().isOk())
@@ -83,12 +93,18 @@ public class ContaControllerITTest {
         .andExpect(jsonPath("$[0].agencia", CoreMatchers.is(listaRetorno.get(0).getAgencia())));
 
   }
-    @Test
-    void getAllByCustomer_returnNotFound_whenIdNotExists() {
 
-    }
+  @Test
+  void getAllByCustomer_returnNotFound_whenIdNotExists() throws Exception {
 
-    @Test
+    ResultActions resposta = mockMvc.perform(get("/contas/cliente/100")
+        .contentType(MediaType.APPLICATION_JSON));
+
+    resposta.andExpect(status().isNotFound());
+
+  }
+
+  @Test
   void newConta_returnConta_whenIdNotExists() throws Exception {
     Conta conta = Conta.builder().tipoConta(TipoConta.ESTUDANTIL).saldo(5642).agencia(0101).build();
 
@@ -96,7 +112,17 @@ public class ContaControllerITTest {
         .content(objectMapper.writeValueAsString(conta))
         .contentType(MediaType.APPLICATION_JSON));
 
-        resultado.andExpect(status().isCreated())
-                .andExpect(jsonPath("$.agencia", CoreMatchers.is(conta.getAgencia())));
+    resultado.andExpect(status().isCreated())
+        .andExpect(jsonPath("$.agencia", CoreMatchers.is(conta.getAgencia())));
+  }
+
+  @Test
+  void newConta_throwsBadRequest_whenIdExists() throws Exception {
+    Conta conta = Conta.builder().numeroConta(1).tipoConta(TipoConta.ESTUDANTIL).saldo(5642).agencia(0101).build();
+    ResultActions resultado = mockMvc.perform(post("/contas")
+        .content(objectMapper.writeValueAsString(conta))
+        .contentType(MediaType.APPLICATION_JSON));
+
+    resultado.andExpect(status().isBadRequest());
   }
 }

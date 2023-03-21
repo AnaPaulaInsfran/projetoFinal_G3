@@ -73,8 +73,6 @@ public class MovimentacaoControllerITTest {
         .perform(get("/movimentacao/{id}", conta.getNumeroConta()).contentType(MediaType.APPLICATION_JSON));
 
     resultado.andExpect(status().isOk())
-        // .andExpect(jsonPath("$[0].numeroSeq",
-        // CoreMatchers.is(movimentacoesRetorno.get(0).getNumeroSeq())));
         .andExpect(jsonPath("$[0].valor", CoreMatchers.is(movimentacoesRetorno.get(0).getValor())));
 
   }
@@ -98,17 +96,16 @@ public class MovimentacaoControllerITTest {
         .andExpect(jsonPath("$.valor", CoreMatchers.is(movimentacao.getValor())));
   }
 
-  // @Test
-  // void cadastrarMovimentacoes_retornaBadRequest_quandoIdExistir() {
-  // Movimentacao movimentacao = GenerateMovimentacao.novaMovimentacaoSemId();
-  // movimentacaoRepo.save(movimentacao);
+  @Test
+  void cadastrarMovimentacoes_retornaBadRequest_quandoIdExistir() throws Exception {
+    Movimentacao movimentacao = GenerateMovimentacao.novaMovimentacao();
 
-  // // ResultActions resultado = mockMvc.perform(post("/movimentacao/1")
+    ResultActions resultado = mockMvc.perform(post("/movimentacao")
+        .content(objectMapper.writeValueAsString(movimentacao))
+        .contentType(MediaType.APPLICATION_JSON));
 
-  // // .contentType(MediaType.APPLICATION_JSON));
-
-  // // resultado.andExpect(status().isBadRequest());
-  // }
+    resultado.andExpect(status().isBadRequest());
+  }
 
   @Test
   void transferirValor_retornaStatusOk_quandoContasEValorValidos() throws Exception {
